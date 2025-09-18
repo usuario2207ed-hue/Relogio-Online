@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relógio e Ferramentas de Tempo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Menu de Navegação */
+        .top-menu {
+            width: 100%;
+            background-color: #333;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+        .top-menu button {
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .top-menu button:hover {
+            background-color: #777;
+        }
+
+        /* Conteúdo principal */
+        .container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        /* Seções de conteúdo */
+        .content {
+            display: none;
+            text-align: center;
+            width: 100%;
+        }
+        .content.active {
+            display: block;
+        }
+
+        /* Estilos do Relógio Central */
+        .clock-display {
+            font-size: 5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .date-display {
+            font-size: 1.5rem;
+            margin-top: -10px;
+        }
+
+        .clock-options button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Estilos do Cronômetro/Contador */
+        .timer-display {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .timer-controls button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .timer-controls button.pause {
+            background-color: #ffc107;
+        }
+
+        .timer-controls button.stop {
+            background-color: #dc3545;
+        }
+
+        /* Relógio Analógico */
+        #analog-clock {
+            width: 200px;
+            height: 200px;
+            background: white;
+            border: 5px solid #333;
+            border-radius: 50%;
+            position: relative;
+            margin-top: 20px;
+        }
+        .hand {
+            position: absolute;
+            left: 50%;
+            bottom: 50%;
+            transform-origin: bottom;
+            background-color: black;
+            border-radius: 5px;
+        }
+        .hour {
+            width: 6px;
+            height: 60px;
+            transform: translateX(-50%);
+        }
+        .minute {
+            width: 4px;
+            height: 80px;
+            transform: translateX(-50%);
+        }
+        .second {
+            width: 2px;
+            height: 90px;
+            background-color: red;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-menu">
+        <button id="show-clock">Relógio Central</button>
+        <button id="show-stopwatch">Cronômetro</button>
+        <button id="show-counter">Contador</button>
+    </div>
+
+    <div class="container">
+        <div id="clock-section" class="content active">
+            <h2>Relógio Central</h2>
+            <div id="digital-clock" class="clock-display"></div>
+            <div id="analog-clock">
+                <div class="hand hour" style="transform: rotate(0deg);"></div>
+                <div class="hand minute" style="transform: rotate(0deg);"></div>
+                <div class="hand second" style="transform: rotate(0deg);"></div>
+            </div>
+            <div id="current-date" class="date-display"></div>
+            <div class="clock-options">
+                <button onclick="toggleClockDisplay()">Alternar Digital/Analógico</button>
+            </div>
+        </div>
+
+        <div id="stopwatch-section" class="content">
+            <h2>Cronômetro</h2>
+            <div id="stopwatch-display" class="timer-display">00:00:00</div>
+            <div class="timer-controls">
+                <button id="stopwatch-start">Iniciar</button>
+                <button id="stopwatch-pause" class="pause">Pausar</button>
+                <button id="stopwatch-stop" class="stop">Parar</button>
+                <button id="stopwatch-reset">Resetar</button>
+            </div>
+        </div>
+
+        <div id="counter-section" class="content">
+            <h2>Contador</h2>
+            <div id="counter-display" class="timer-display">00:00:00</div>
+            <div class="timer-controls">
+                <button id="counter-start">Iniciar</button>
+                <button id="counter-pause" class="pause">Pausar</button>
+                <button id="counter-stop" class="stop">Parar</button>
+                <button id="counter-reset">Resetar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lógica para alternar as seções
+        const clockBtn = document.getElementById('show-clock');
+        const stopwatchBtn = document.getElementById('show-stopwatch');
+        const counterBtn = document.getElementById('show-counter');
+
+        const clockSection = document.getElementById('clock-section');
+        const stopwatchSection = document.getElementById('stopwatch-section');
+        const counterSection = document.getElementById('counter-section');
+
+        function showSection(section) {
+            clockSection.classList.remove('active');
+            stopwatchSection.classList.remove('active');
+            counterSection.classList.remove('active');
+            section.classList.add('active');
+        }
+
+        clockBtn.addEventListener('click', () => showSection(clockSection));
+        stopwatchBtn.addEventListener('click', () => showSection(stopwatchSection));
+        counterBtn.addEventListener('click', () => showSection(counterSection));
+
+
+        /* --- Relógio Central --- */
+        const digitalClock = document.getElementById('digital-clock');
+        const analogClock = document.getElementById('analog-clock');
+        const dateDisplay = document.getElementById('current-date');
+        let isDigital = true;
+
+        function updateClock() {
+            const now = new Date();
+
+            // Relógio Digital
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            digitalClock.textContent = `${hours}:${minutes}:${seconds}`;
+
+            // Data
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateDisplay.textContent = now.toLocaleDateString('pt-BR', options);
+        
+            // Relógio Analógico
+            const hourHand = analogClock.querySelector('.hour');
+            const minuteHand = analogClock.querySelector('.minute');
+            const secondHand = analogClock.querySelector('.second');
+
+            const hDeg = (now.getHours() % 12) * 30 + (now.getMinutes() / 2);
+            const mDeg = now.getMinutes() * 6 + (now.getSeconds() / 10);
+            const sDeg = now.getSeconds() * 6;
+
+            hourHand.style.transform = `rotate(${hDeg}deg)`;
+            minuteHand.style.transform = `rotate(${mDeg}deg)`;
+            secondHand.style.transform = `rotate(${sDeg}deg)`;
+        }
+
+        function toggleClockDisplay() {
+            isDigital = !isDigital;
+            digitalClock.style.display = isDigital ? 'block' : 'none';
+            analogClock.style.display = isDigital ? 'none' : 'block';
+        }
+
+        // Exibe o relógio digital por padrão
+        analogClock.style.display = 'none';
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+
+        /* --- Lógica do Cronômetro e Contador --- */
+        
+        // Cronômetro
+        let stopwatchInterval;
+        let stopwatchSeconds = 0;
+        const stopwatchDisplay = document.getElementById('stopwatch-display');
+        
+        function updateStopwatch() {
+            stopwatchSeconds++;
+            const secs = String(stopwatchSeconds % 60).padStart(2, '0');
+            const mins = String(Math.floor(stopwatchSeconds / 60) % 60).padStart(2, '0');
+            const hours = String(Math.floor(stopwatchSeconds / 3600)).padStart(2, '0');
+            stopwatchDisplay.textContent = `${hours}:${mins}:${secs}`;
+        }
+        
+        document.getElementById('stopwatch-start').addEventListener('click', () => {
+            if (!stopwatchInterval) {
+                stopwatchInterval = setInterval(updateStopwatch, 1000);
+            }
+        });
+        
+        document.getElementById('stopwatch-pause').addEventListener('click', () => {
+            clearInterval(stopwatchInterval);
+            stopwatchInterval = null;
+        });
+        
+        document.getElementById('stopwatch-stop').addEventListener('click', () => {
+            clearInterval(stopwatchInterval);
+            stopwatchInterval = null;
+            stopwatchSeconds = 0;
+            stopwatchDisplay.textContent = '00:00:00';
+        });
+
+        document.getElementById('stopwatch-reset').addEventListener('click', () => {
+            clearInterval(stopwatchInterval);
+            stopwatchInterval = null;
+            stopwatchSeconds = 0;
+            stopwatchDisplay.textContent = '00:00:00';
+        });
+
+
+        // Contador (Exemplo: 1 minuto)
+        let counterInterval;
+        let counterSeconds = 60; // 1 minuto
+        const counterDisplay = document.getElementById('counter-display');
+        
+        function updateCounter() {
+            if (counterSeconds > 0) {
+                counterSeconds--;
+                const secs = String(counterSeconds % 60).padStart(2, '0');
+                const mins = String(Math.floor(counterSeconds / 60)).padStart(2, '0');
+                counterDisplay.textContent = `00:${mins}:${secs}`;
+            } else {
+                clearInterval(counterInterval);
+                alert("Tempo esgotado!");
+            }
+        }
+        
+        document.getElementById('counter-start').addEventListener('click', () => {
+            if (!counterInterval) {
+                counterInterval = setInterval(updateCounter, 1000);
+            }
+        });
+        
+        document.getElementById('counter-pause').addEventListener('click', () => {
+            clearInterval(counterInterval);
+            counterInterval = null;
+        });
+        
+        document.getElementById('counter-stop').addEventListener('click', () => {
+            clearInterval(counterInterval);
+            counterInterval = null;
+            counterSeconds = 60;
+            counterDisplay.textContent = '00:01:00';
+        });
+
+        document.getElementById('counter-reset').addEventListener('click', () => {
+            clearInterval(counterInterval);
+            counterInterval = null;
+            counterSeconds = 60;
+            counterDisplay.textContent = '00:01:00';
+        });
+    </script>
+</body>
+</html>
